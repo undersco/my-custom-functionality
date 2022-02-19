@@ -46,4 +46,28 @@ function custom_enqueue_files() {
 	// wp_enqueue_script( 'highlightjs', plugin_dir_url( __FILE__ ) . 'assets/js/highlight.pack.js', '', '9.9.0', true );
 
 	// wp_enqueue_script( 'highlightjs-init', plugin_dir_url( __FILE__ ) . 'assets/js/highlight-init.js', '', '1.0.0', true );
+
+	if ( is_singular( 'my_cpt' ) ) {
+		wp_enqueue_style( 'my_cpt-css', plugin_dir_url( __FILE__ ) . 'assets/css/my_cpt.css' );
+		wp_enqueue_script( 'my_cpt-js', plugin_dir_url( __FILE__ ) . 'assets/js/my_cpt.js', '', '1.0.0', true );
+   }
 }
+
+// Supprime les versions des fichiers css et JS (dev)
+function remove_css_js_version( $src ) {
+    if( strpos( $src, '?ver=' ) )
+        $src = remove_query_arg( 'ver', $src );
+    return $src;
+}
+add_filter( 'style_loader_src', 'remove_css_js_version', 9999 );
+add_filter( 'script_loader_src', 'remove_css_js_version', 9999 );
+
+/* Autoriser les fichiers SVG */ 
+function wpc_mime_types($mimes) { $mimes['svg'] = 'image/svg+xml'; return $mimes; } 
+add_filter('upload_mimes', 'wpc_mime_types');
+
+/**
+ * Chargement des fonctions d'acf
+ * @return option des pages + chemin vers le json local
+ */
+include_once('inc/acf.php');
